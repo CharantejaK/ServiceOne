@@ -1,0 +1,30 @@
+.body-main {
+    margin-top:70px;
+}
+.error-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 55px;
+    color: white;
+    z-index: 10000;
+    padding: 15px;
+    text-align: center;
+}
+.error-banner .close {
+    float:right;
+    color:white;
+    opacity:1;
+}
+.redbg {
+    background:darkred;
+}
+.greenbg {
+    background:green;
+}
+
+.modal-body span {
+	display:block;
+	word-wrap:break-word;
+}
