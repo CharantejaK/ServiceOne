@@ -113,15 +113,14 @@ public class MockServiceDelegate {
 				if (!StringUtils.isEmpty(request)) {
 					if ((contentType.equals(MediaType.APPLICATION_JSON_VALUE)) && (MockServiceUtil.isSameJsonIgnoringValues(request, mockData.getRequest()))) {
 
-						// gets the response from the MockData for the request ServiceName
-							response = mockData.getResponse();
-							MockServiceUtil.convertJsonStrToMap(request);
+						// gets the json response dynamically based on the request key and values							
+							response = MockServiceUtil.getDynamicResponse(request, mockData.getResponse());
 						// Sets the content type in the response header
 						httpHeaders.setContentType(ContentType.findByName(mockData.getContenttype()).getType());
 						break;					
 					}
 					else if ((contentType.equals(MediaType.APPLICATION_XML_VALUE)) && (MockServiceUtil.isSameXmlIgnoringValues(request, mockData.getRequest()))) {
-						// gets the response from the MockData for the request ServiceName
+						// gets the xml response from the MockData for the request ServiceName
 							response = mockData.getResponse();
 						// Sets the content type in the response header
 						httpHeaders.setContentType(ContentType.findByName(mockData.getContenttype()).getType());

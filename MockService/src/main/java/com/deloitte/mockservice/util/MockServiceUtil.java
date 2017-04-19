@@ -239,4 +239,55 @@ public class MockServiceUtil {
 		}
 		
 	}*/
+	
+	public static String getDynamicResponse(String request, String response) throws MockServiceSystemException {
+		Map<String, String> map;
+		try {
+			map = convertJsonStrToMap(request);
+			Set<String> keySet = map.keySet();
+			JSONObject responseJson = new JSONObject(response);
+			for (String key: keySet) {
+				function(responseJson, key, map.get(key));
+			}
+			return responseJson.toString();
+		} catch (Exception e) {
+			throw new MockServiceSystemException(e);
+		}
+		
+		
+		
+		
+	}
+	
+	   public static JSONObject function(JSONObject obj, String keyMain, String newValue) throws Exception {
+		    // We need to know keys of Jsonobject
+		    JSONObject json = new JSONObject();
+		    Iterator iterator = obj.keys();
+		    String key = null;
+		    while (iterator.hasNext()) {
+		        key = (String) iterator.next();
+		        // if object is just string we change value in key
+		        if ((obj.optJSONArray(key)==null) && (obj.optJSONObject(key)==null)) {
+		            if ((key.equals(keyMain))) {
+		                // put new value
+		                obj.put(key, newValue);
+		                return obj;
+		            }
+		        }
+
+		        // if it's jsonobject
+		        if (obj.optJSONObject(key) != null) {
+		            function(obj.getJSONObject(key), keyMain, newValue);
+		        }
+
+		        // if it's jsonarray
+		        if (obj.optJSONArray(key) != null) {
+		            JSONArray jArray = obj.getJSONArray(key);
+		            for (int i=0;i<jArray.length();i++) {
+		                    function(jArray.getJSONObject(i), keyMain,  newValue);
+		            }
+		        }
+		    }
+		    return obj;
+		}
 }
