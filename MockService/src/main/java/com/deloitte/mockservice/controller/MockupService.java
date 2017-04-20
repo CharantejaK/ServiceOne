@@ -31,7 +31,7 @@ public class MockupService {
 	@RequestMapping(value = "/mockservice", method = {RequestMethod.POST,RequestMethod.GET}, produces = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_XML_VALUE, MediaType.ALL_VALUE })
 	public @ResponseBody ResponseEntity<String> getMockResponse(
-			@RequestHeader(value = "Content-Type") String contentType, @RequestBody(required=false) String request,HttpServletRequest servletRequest)  {
+			@RequestHeader(value = "Content-Type", required=false) String contentType, @RequestBody(required=false) String request,HttpServletRequest servletRequest)  {
 		LOG.info("Inside the getMockResponse Service");
 		return mockServiceDelegate.getMockResponse(request, contentType, servletRequest.getAttribute("serviceName").toString());
 	}

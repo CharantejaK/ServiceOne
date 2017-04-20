@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.transaction.SystemException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -31,8 +30,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import com.delolitte.mockservice.exception.MockServiceSystemException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class MockServiceUtil {
 
@@ -90,7 +87,7 @@ public class MockServiceUtil {
 		
 	}
 
-	private static ArrayList<String> getList(Iterator<String> iterator) {
+	public static ArrayList<String> getList(Iterator<String> iterator) {
 		ArrayList<String> list = new ArrayList<>();
 		for (Iterator<String> it = iterator; it.hasNext();) {
 			list.add(it.next());
@@ -263,26 +260,6 @@ public class MockServiceUtil {
 		}
 		return out;
 	}
-	
-	/*public static String getDynamicResponse(HashMap<String, String> map, String response) throws MockServiceSystemException {
-		try {
-			JSONObject jsonResponse = new JSONObject(response);
-			ObjectMapper mapper = new ObjectMapper();
-			JsonNode node =  mapper.readTree(jsonResponse.toString());node.get(0).f
-			
-			Set<String> set = map.keySet();
-			Jsonpath
-			
-			for (String key : set) {
-			
-			updateableNode.va
-				
-			}
-		} catch (JSONException | IOException e) {
-			throw new MockServiceSystemException(e);
-		}
-		
-	}*/
 	
 	public static String getDynamicResponse(String request, String response) throws MockServiceSystemException {
 		Map<String, String> map;
