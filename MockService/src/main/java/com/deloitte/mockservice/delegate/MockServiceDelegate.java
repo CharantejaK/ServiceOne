@@ -111,10 +111,15 @@ public class MockServiceDelegate {
 			List<MockData> mockDataList = mockDataDao.findByServicename(service[1].replace(FORWARD_SLASH, BLANK));
 			for (MockData mockData : mockDataList) {
 				if (!StringUtils.isEmpty(request)) {
-					if ((contentType.equals(MediaType.APPLICATION_JSON_VALUE)) && (MockServiceUtil.isSameJsonIgnoringValues(request, mockData.getRequest()))) {
-
-						// gets the json response dynamically based on the request key and values							
+					if ((contentType.equals(MediaType.APPLICATION_JSON_VALUE))) {
+						if ((MockServiceUtil.isSameJsonIgnoringValues(request, mockData.getRequest()))) {
+							//gets the json response dynamically based on the request key and values	
 							response = MockServiceUtil.getDynamicResponse(request, mockData.getResponse());
+						} else if (MockServiceUtil.isRequestList(request, mockData.getRequest())) {
+							//gets the json dynamic response list  based on the request arraylist count 	
+							response = MockServiceUtil.getDynamicResponseList(request, mockData.getResponse());
+						}						
+							
 						// Sets the content type in the response header
 						httpHeaders.setContentType(ContentType.findByName(mockData.getContenttype()).getType());
 						break;					

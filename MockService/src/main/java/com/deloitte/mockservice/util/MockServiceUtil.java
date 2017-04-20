@@ -7,9 +7,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.transaction.SystemException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -42,8 +44,50 @@ public class MockServiceUtil {
 			JSONObject jsonObj2 = new JSONObject(json2);
 			return jsonsEqual(jsonObj1, jsonObj2);
 		} catch (Exception e) {
+			return false;
+		}
+	}
+	
+	
+	public static Boolean isRequestList(String requestList, String request) throws MockServiceSystemException {
+		try {
+			JSONObject jsonObj1 = new JSONObject(requestList);
+			JSONObject jsonObj2 = new JSONObject(request);
+			if (jsonObj1.length() == 1) {
+				String firstElement = (String) jsonObj1.keys().next();
+				if (jsonObj1.optJSONArray(firstElement) != null) {
+					JSONArray array = jsonObj1.getJSONArray(firstElement);
+					for (int i=0;i<array.length();i++) {
+						if (isSameJsonIgnoringValues(array.getJSONObject(i).toString(), jsonObj2.toString())) {
+							return true;
+						}
+	            }
+
+				}
+			}		
+			return false;
+		} catch (JSONException e) {
+			return false;
+		}
+	}
+	
+	public static String getDynamicResponseList(String requestList, String response) throws MockServiceSystemException {
+		List<String> responseList = new ArrayList<>();
+		try {
+			JSONObject jsonObj1 = new JSONObject(requestList);
+			String firstElement = (String) jsonObj1.keys().next();
+			if (jsonObj1.optJSONArray(firstElement) != null) {
+				JSONArray array = jsonObj1.getJSONArray(firstElement);
+				for (int i=0;i<array.length();i++) {
+					String responseStr = getDynamicResponse(array.getJSONObject(i).toString(), response);
+					responseList.add(responseStr);
+				}
+            }
+			return responseList.toString();
+		} catch (JSONException e) {
 			throw new MockServiceSystemException(e);
 		}
+		
 	}
 
 	private static ArrayList<String> getList(Iterator<String> iterator) {
@@ -54,10 +98,7 @@ public class MockServiceUtil {
 		return list;
 	}
 
-	private static Boolean isSame(ArrayList<String> list1, ArrayList<String> list2) {
-		if (list1.size() != list2.size()) {
-			return false;
-		}
+	private static Boolean isSame(ArrayList<String> list1, ArrayList<String> list2) {		
 		Collections.sort(list1);
 		Collections.sort(list2);
 		for (int i = 0; i < list1.size(); i++) {
@@ -115,6 +156,9 @@ public class MockServiceUtil {
 		NodeList nodeList2 = document2.getElementsByTagName("*");
 		ArrayList<String> list1 = new ArrayList<>();
 		ArrayList<String> list2 = new ArrayList<>();
+		if (nodeList.getLength() != nodeList2.getLength()) {
+			return false;
+		}
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			list1.add(nodeList.item(i).getNodeName());
 			list2.add(nodeList2.item(i).getNodeName());
