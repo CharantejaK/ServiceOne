@@ -24,6 +24,8 @@ public class MockServiceMapper {
 			mockDto.setRequestId(mockData.getId());
 			mockDto.setClient(mockData.getClient());
 			mockDto.setServiceName(mockData.getServicename());
+			mockDto.setId(mockData.getId());
+			mockDto.setIsOnlySchemaValidation(mockData.getIsStaticMock());
 			mockDtoList.add(mockDto);
 		}
 		return mockDtoList;
@@ -39,6 +41,22 @@ public class MockServiceMapper {
 		mockData.setServicename(saveMockDataRequest.getServiceName());
 		mockData.setCreatedtime(Calendar.getInstance());
 		mockData.setCreatedby(saveMockDataRequest.getClient());
+		mockData.setId(saveMockDataRequest.getId());
+		mockData.setIsStaticMock(saveMockDataRequest.getIsStaticMock());
+		return mockData;		
+	}
+	
+	public MockData map(SaveMockDataRequest saveMockDataRequest, MockData mockData) {		
+		mockData.setContenttype(saveMockDataRequest.getContenttype());
+		mockData.setRequest(saveMockDataRequest.getRequest());
+		mockData.setResponse(saveMockDataRequest.getResponse());
+		mockData.setClient(saveMockDataRequest.getClient());
+		mockData.setDescription(saveMockDataRequest.getDescription());
+		mockData.setServicename(saveMockDataRequest.getServiceName());
+		mockData.setCreatedtime(Calendar.getInstance());
+		mockData.setCreatedby(saveMockDataRequest.getClient());
+		mockData.setId(saveMockDataRequest.getId());
+		mockData.setIsStaticMock(saveMockDataRequest.getIsStaticMock());
 		return mockData;		
 	}
 }

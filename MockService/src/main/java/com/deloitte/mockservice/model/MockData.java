@@ -38,6 +38,9 @@ public class MockData {
 	@NotNull
 	private String createdby;
 	
+	@NotNull 
+	private Boolean isStaticMock;
+	
 	public Calendar getCreatedtime() {
 		return createdtime;
 	}
@@ -112,4 +115,12 @@ public class MockData {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
+	public Boolean getIsStaticMock() {
+		return isStaticMock;
+	}
+
+	public void setIsStaticMock(Boolean isStaticMock) {
+		this.isStaticMock = isStaticMock;
+	}	
 }

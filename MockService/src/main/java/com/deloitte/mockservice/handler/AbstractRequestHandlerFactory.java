@@ -2,27 +2,39 @@ package com.deloitte.mockservice.handler;
 
 import java.util.HashMap;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import com.deloitte.mockservice.type.ContentType;
 
+@Component
 public class AbstractRequestHandlerFactory {
 
 	@Autowired
-	private static JsonRequestHandler jsonRequestHandler;
+	private  JsonRequestHandler jsonRequestHandler;
 
 	@Autowired
-	private static XmlRequestHandler xmlRequestHandler;
+	private  XmlRequestHandler xmlRequestHandler;
+	
+	@Autowired
+	private DefaultRequestHandler defaultRequestHandler;
 
-	private static HashMap<String, AbstractRequestHandler> requestHandlerMap = new HashMap<>();
+	private  HashMap<String, AbstractRequestHandler> requestHandlerMap = new HashMap<>();
 
-	static {
+	@PostConstruct
+	public void initialize() {
 		requestHandlerMap.put(ContentType.XML.getName(), xmlRequestHandler);
-		requestHandlerMap.put(ContentType.JSON.getName(), jsonRequestHandler);
+		requestHandlerMap.put(ContentType.JSON.getName(), jsonRequestHandler);		
 	}
 
-	public static AbstractRequestHandler getRequestHandlerByContentType(String type) {
+	public  AbstractRequestHandler getRequestHandlerByContentType(String type) {
+		if (StringUtils.isEmpty(type)) {
+			return defaultRequestHandler;
+		} else {
 		return requestHandlerMap.get(type);
+		}
 	}
-
 }

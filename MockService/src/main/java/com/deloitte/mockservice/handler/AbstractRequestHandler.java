@@ -1,76 +1,77 @@
 package com.deloitte.mockservice.handler;
 
 import java.util.List;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import com.deloitte.mockservice.dao.MockDataDao;
+import com.deloitte.mockservice.dto.GetMockDataResponse;
+import com.deloitte.mockservice.dto.SaveMockDataRequest;
+import com.deloitte.mockservice.dto.SaveMockDataResponse;
+import com.deloitte.mockservice.mapper.MockServiceMapper;
 import com.deloitte.mockservice.model.MockData;
 import com.delolitte.mockservice.exception.MockServiceSystemException;
 
-public abstract class AbstractRequestHandler {
+@Component
+public abstract class AbstractRequestHandler {	
 	
-	protected Boolean dynamicResponse = true;
+	protected static String BLANK = "";
 	
-	protected Integer responseRepeatCount = 1;
+	protected String request;	
 	
-	protected String request;
+	protected String serviceName;	
 	
-	protected String response;
+	protected String contentType;
 	
-	protected String serviceName;
+	@Autowired
+	MockDataDao mockDataDao;
 	
-	protected List<MockData> mockDataList;
-	
-	public String getServiceName() {
-		return serviceName;
-	}
+	@Autowired
+	MockServiceMapper mockServiceMapper;
 
 	public void setServiceName(String serviceName) {
 		this.serviceName = serviceName;
 	}
 
-	public Boolean getDynamicResponse() {
-		return dynamicResponse;
-	}
-
-	public abstract String getMockResponse() throws MockServiceSystemException;
-
-	public String getResponse() {
-		return response;
-	}
-
-	public void setResponse(String response) {
-		this.response = response;
-	}
-
-	public String getRequest() {
-		return request;
-	}
-
 	public void setRequest(String request) {
 		this.request = request;
+	}	
+
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
 	}
 	
-	public Boolean IsDynamicResponse() {
-		return dynamicResponse;
-	}
-
-	public void setDynamicResponse(Boolean dynamicResponse) {
-		this.dynamicResponse = dynamicResponse;
-	}
-
-	public Integer getResponseRepeatCount() {
-		return responseRepeatCount;
-	}
-
-	public void setResponseRepeatCount(Integer responseRepeatCount) {
-		this.responseRepeatCount = responseRepeatCount;
-	}
-
-	public List<MockData> getMockDataList() {
+	public abstract GetMockDataResponse getMockResponse() throws MockServiceSystemException;
+	
+	public abstract SaveMockDataResponse saveMockData(SaveMockDataRequest request) throws MockServiceSystemException;
+		
+	protected List<MockData> getMockDataListOfStaticMockObjects() {
+		List<MockData> mockDataList = mockDataDao.findByServicenameAndIsStaticMockAndContenttype(serviceName, Boolean.TRUE, contentType);
 		return mockDataList;
 	}
-
-	public void setMockDataList(List<MockData> mockDataList) {
-		this.mockDataList = mockDataList;
+	
+	protected List<MockData> getMockDataListOfDynamicMockObjects() {
+		List<MockData> mockDataList = mockDataDao.findByServicenameAndIsStaticMockAndContenttype(serviceName, Boolean.FALSE, contentType);
+		return mockDataList;
 	}
 	
+	protected List<MockData> getMockData() {
+		return mockDataDao.findByServicename(serviceName);
+	}
+
+	public  GetMockDataResponse getMockDataForEmptyRequest() throws MockServiceSystemException{
+		try {
+		GetMockDataResponse response = new GetMockDataResponse();
+		MockData mockData = mockDataDao.findByServicenameAndContenttypeAndRequestAndIsStaticMock(serviceName, Boolean.TRUE, contentType, request);			
+		response.setResponse(mockData.getResponse());
+		response.setContentType(mockData.getContenttype());
+		return response;
+		} catch (Exception e) {
+			throw new MockServiceSystemException(e);
+		}
+	}	
+	
+	public Long saveRequest(SaveMockDataRequest mockDataRequest) {
+		MockData mockData = mockDataDao.save(mockServiceMapper.map(mockDataRequest));
+		return mockData.getId();
+	}
 }

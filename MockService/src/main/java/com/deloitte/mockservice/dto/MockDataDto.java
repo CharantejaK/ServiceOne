@@ -14,7 +14,11 @@ public class MockDataDto {
 	
 	private Long requestId;
 	
+	private Long id;
+	
 	private String serviceName;
+	
+	private Boolean isOnlySchemaValidation;
 
 	public String getServiceName() {
 		return serviceName;
@@ -71,5 +75,20 @@ public class MockDataDto {
 	public void setRequestId(Long requestId) {
 		this.requestId = requestId;
 	}
-	
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Boolean getIsOnlySchemaValidation() {
+		return isOnlySchemaValidation;
+	}
+
+	public void setIsOnlySchemaValidation(Boolean isOnlySchemaValidation) {
+		this.isOnlySchemaValidation = isOnlySchemaValidation;
+	}	
 }

@@ -15,10 +15,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.deloitte.mockservice.dao.MockDataDao;
+import com.deloitte.mockservice.dto.DeleteMockDataRequest;
+import com.deloitte.mockservice.dto.DeleteMockDataResponse;
 import com.deloitte.mockservice.dto.ErrorCode;
+import com.deloitte.mockservice.dto.GetMockDataResponse;
 import com.deloitte.mockservice.dto.SaveMockDataRequest;
 import com.deloitte.mockservice.dto.SaveMockDataResponse;
 import com.deloitte.mockservice.dto.ViewMockDataResponse;
+import com.deloitte.mockservice.handler.AbstractRequestHandler;
+import com.deloitte.mockservice.handler.AbstractRequestHandlerFactory;
 import com.deloitte.mockservice.mapper.MockServiceMapper;
 import com.deloitte.mockservice.model.MockData;
 import com.deloitte.mockservice.type.ContentType;
@@ -27,22 +32,19 @@ import com.delolitte.mockservice.exception.MockServiceSystemException;
 
 @Component
 public class MockServiceDelegate {
-	Logger LOG = Logger.getLogger(MockServiceDelegate.class);
-
-	private static String DUPLICATE_REQUEST = "00001";
-	private static String DUPLICATE_REQUEST_MESSAGE = "Duplicate request and response. An entry with the same request and response already exists.";
-	private static String INVALID_REQUEST = "00002";
-	private static String INVALID_RESPONSE = "Invalid request or response . Please check the request and responses are valid as per the selected content type;";
-	private static String FORWARD_SLASH ="/";
+	Logger LOG = Logger.getLogger(MockServiceDelegate.class);	
+	private static String FORWARD_SLASH = "/";
 	private static String BLANK = "";
-	
 
 	@Autowired
 	MockDataDao mockDataDao;
-	
+
 	@Autowired
 	MockServiceMapper mockServiceMapper;
-	
+
+	@Autowired
+	AbstractRequestHandlerFactory requestHandlerFactory;
+
 	public ResponseEntity<ViewMockDataResponse> getMockDataByClient(String client) {
 		ViewMockDataResponse response = new ViewMockDataResponse();
 		List<MockData> mockDataList = mockDataDao.findByClient(client.toLowerCase());
@@ -51,50 +53,26 @@ public class MockServiceDelegate {
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 		return new ResponseEntity<>(response, httpHeaders, HttpStatus.OK);
 	}
-	
+
 	public ResponseEntity<SaveMockDataResponse> saveMockData(SaveMockDataRequest mockDataRequest) {
 		SaveMockDataResponse response = new SaveMockDataResponse();
+		mockDataRequest.setIsStaticMock(Boolean.FALSE);		
 		List<ErrorCode> errorList = new ArrayList<>();
 		response.setErrorList(errorList);
 		try {
-			String requestStr = "";
-			String responseStr = "";
-			if (mockDataRequest.getContenttype().equals(MediaType.APPLICATION_JSON_VALUE)) {
-				if (!StringUtils.isEmpty(mockDataRequest.getRequest())) {
-					requestStr = MockServiceUtil.getFormattedJsonString(mockDataRequest.getRequest());
-				}
-				responseStr = MockServiceUtil.getFormattedJsonString(mockDataRequest.getResponse());
-			} else if (mockDataRequest.getContenttype().equals(MediaType.APPLICATION_XML_VALUE)) {
-				if (!StringUtils.isEmpty(mockDataRequest.getRequest())) {
-					requestStr = MockServiceUtil.getFormattedXmlString(mockDataRequest.getRequest());
-				}
-				responseStr = MockServiceUtil.getFormattedXmlString(mockDataRequest.getResponse());
-			}			
-			List<MockData> mockDataList = mockDataDao.findByRequestAndResponseAndServicename(requestStr, responseStr, mockDataRequest.getServiceName());
-			if (mockDataList == null || mockDataList.isEmpty()) {
-				mockDataRequest.setRequest(requestStr);
-				mockDataRequest.setResponse(responseStr);
-			} else {
-				ErrorCode errorCode = new ErrorCode();
-				errorCode.setErrorCode(DUPLICATE_REQUEST);
-				errorCode.setErrorMessage(DUPLICATE_REQUEST_MESSAGE);
-				response.getErrorList().add(errorCode);
-			}		
+			AbstractRequestHandler requestHandler = requestHandlerFactory.getRequestHandlerByContentType(mockDataRequest.getContenttype());
+			String serviceName = mockDataRequest.getServiceName().replaceAll(FORWARD_SLASH, BLANK);
+			requestHandler.setServiceName(serviceName);			
+			response = requestHandler.saveMockData(mockDataRequest);
+					
 		} catch (MockServiceSystemException e) {
-			ErrorCode errorCode = new ErrorCode();
-			errorCode.setErrorCode(INVALID_REQUEST);
-			errorCode.setErrorMessage(INVALID_RESPONSE);
-			response.getErrorList().add(errorCode);		
-		}
-		if (response.getErrorList().isEmpty()) {
-		MockData mockData = mockDataDao.save(mockServiceMapper.map(mockDataRequest));
-		response.setRequestId(mockData.getId());
+			LOG.error("Exception inside save Mock Data request", e);
 		}
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 		return new ResponseEntity<>(response, httpHeaders, HttpStatus.OK);
 	}
-	
+
 	/**
 	 * @param request
 	 * @param contentType
@@ -103,44 +81,45 @@ public class MockServiceDelegate {
 	 */
 	public ResponseEntity<String> getMockResponse(String request, String contentType, String serviceName) {
 		LOG.info("Inside get Mock Response method inside the mock helper id=" + serviceName + " request =" + request);
-		String response = null;
 		HttpHeaders httpHeaders = new HttpHeaders();
-		String service[] = serviceName.split(MOCKSERVICE);
+		GetMockDataResponse mockResponse = new GetMockDataResponse();
 		try {
-			// Gets the MockData from the DB based on the Service Name
-			List<MockData> mockDataList = mockDataDao.findByServicename(service[1].replace(FORWARD_SLASH, BLANK));
-			for (MockData mockData : mockDataList) {
-				if (!StringUtils.isEmpty(request)) {
-					if ((contentType.equals(MediaType.APPLICATION_JSON_VALUE))) {
-						if ((MockServiceUtil.isSameJsonIgnoringValues(request, mockData.getRequest()))) {
-							//gets the json response dynamically based on the request key and values	
-							response = MockServiceUtil.getDynamicResponse(request, mockData.getResponse());
-						} else if (MockServiceUtil.isRequestList(request, mockData.getRequest())) {
-							//gets the json dynamic response list  based on the request arraylist count 	
-							response = MockServiceUtil.getDynamicResponseList(request, mockData.getResponse());
-						}						
-							
-						// Sets the content type in the response header
-						httpHeaders.setContentType(ContentType.findByName(mockData.getContenttype()).getType());
-						break;					
-					}
-					else if ((contentType.equals(MediaType.APPLICATION_XML_VALUE)) && (MockServiceUtil.isSameXmlIgnoringValues(request, mockData.getRequest()))) {
-						// gets the xml response from the MockData for the request ServiceName
-							response = mockData.getResponse();
-						// Sets the content type in the response header
-						httpHeaders.setContentType(ContentType.findByName(mockData.getContenttype()).getType());
-						break;
-					}
-				} else {
-					if (StringUtils.isEmpty(mockData.getRequest())) {
-						response = mockData.getResponse();
-						break;
-					}
-				}
+			String service[] = serviceName.split(MOCKSERVICE);
+			AbstractRequestHandler requestHandler = requestHandlerFactory.getRequestHandlerByContentType(contentType);
+			requestHandler.setServiceName(service[1].replace(FORWARD_SLASH, BLANK));
+			requestHandler.setRequest(request);
+			if (!StringUtils.isEmpty(contentType) && StringUtils.isEmpty(request)) {
+				requestHandler.setRequest(BLANK);
+				mockResponse = requestHandler.getMockDataForEmptyRequest();
+			} else {
+				mockResponse = requestHandler.getMockResponse();
 			}
 		} catch (MockServiceSystemException e) {
 			LOG.error("Exception inside getMockResponse", e);
 		}
+		if (StringUtils.isEmpty(mockResponse.getResponse())) {
+			return new ResponseEntity<>(BLANK, httpHeaders, HttpStatus.OK);
+		} else {
+			httpHeaders.setContentType(ContentType.findByName(mockResponse.getContentType()).getType());
+			return new ResponseEntity<>(mockResponse.getResponse(), httpHeaders, HttpStatus.OK);
+		}
+	}
+
+	/**
+	 * @param id
+	 * @return ResponseEntity<DeleteMockDataResponse>
+	 */
+	public ResponseEntity<DeleteMockDataResponse> deleteMockData(DeleteMockDataRequest request) {
+		DeleteMockDataResponse response = new DeleteMockDataResponse();
+		HttpHeaders httpHeaders = new HttpHeaders();
+		try {
+			mockDataDao.deleteById(request.getId());
+			response.setResult(Boolean.TRUE);
+			httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+		} catch (Exception e) {
+			response.setResult(Boolean.FALSE);
+		}
 		return new ResponseEntity<>(response, httpHeaders, HttpStatus.OK);
-	}	
+	}
+	
 }

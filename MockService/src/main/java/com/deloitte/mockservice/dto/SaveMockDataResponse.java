@@ -1,11 +1,12 @@
 package com.deloitte.mockservice.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SaveMockDataResponse {	
 	Long requestId;
 	
-	List<ErrorCode> errorList;
+	List<ErrorCode> errorList = new ArrayList<>();
 
 	public Long getRequestId() {
 		return requestId;

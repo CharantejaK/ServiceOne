@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.deloitte.mockservice.delegate.MockServiceDelegate;
+import com.deloitte.mockservice.dto.DeleteMockDataRequest;
+import com.deloitte.mockservice.dto.DeleteMockDataResponse;
 import com.deloitte.mockservice.dto.SaveMockDataRequest;
 import com.deloitte.mockservice.dto.SaveMockDataResponse;
 import com.deloitte.mockservice.dto.ViewMockDataResponse;
@@ -28,8 +30,8 @@ public class MockupService {
 	@Autowired
 	MockServiceDelegate mockServiceDelegate;
 
-	@RequestMapping(value = "/mockservice", method = {RequestMethod.POST,RequestMethod.GET}, produces = { MediaType.APPLICATION_JSON_VALUE,
-			MediaType.APPLICATION_XML_VALUE, MediaType.ALL_VALUE })
+	@RequestMapping(value = "/mockservice", method = {RequestMethod.GET,RequestMethod.POST,RequestMethod.PUT,RequestMethod.DELETE,RequestMethod.OPTIONS,
+			RequestMethod.HEAD,RequestMethod.TRACE,RequestMethod.PATCH}, produces = {MediaType.ALL_VALUE })
 	public @ResponseBody ResponseEntity<String> getMockResponse(
 			@RequestHeader(value = "Content-Type", required=false) String contentType, @RequestBody(required=false) String request,HttpServletRequest servletRequest)  {
 		LOG.info("Inside the getMockResponse Service");
@@ -48,5 +50,11 @@ public class MockupService {
 	public @ResponseBody ResponseEntity<SaveMockDataResponse> saveMockData(@RequestBody SaveMockDataRequest saveMockDataRequest)  {
 		LOG.info("Inside the saveMockData Service");
 		return mockServiceDelegate.saveMockData(saveMockDataRequest);
+	}
+	
+	@RequestMapping(value = "/deletemockdata", method = RequestMethod.POST, produces = (MediaType.APPLICATION_JSON_VALUE))
+	public @ResponseBody ResponseEntity<DeleteMockDataResponse> deleteMockData(@RequestBody DeleteMockDataRequest request)  {
+		LOG.info("Inside the delete Mock Data Response Service");
+		return mockServiceDelegate.deleteMockData(request);
 	}
 }

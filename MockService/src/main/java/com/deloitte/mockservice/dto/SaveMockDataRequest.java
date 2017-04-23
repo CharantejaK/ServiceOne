@@ -14,6 +14,10 @@ public class SaveMockDataRequest {
 	
 	private String serviceName;
 	
+	private Long id; 
+	
+	private Boolean isStaticMock;
+	
 	public String getServiceName() {
 		return serviceName;
 	}
@@ -61,4 +65,21 @@ public class SaveMockDataRequest {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Boolean getIsStaticMock() {
+		return isStaticMock;
+	}
+
+	public void setIsStaticMock(Boolean isStaticMock) {
+		this.isStaticMock = isStaticMock;
+	}
+		
 }

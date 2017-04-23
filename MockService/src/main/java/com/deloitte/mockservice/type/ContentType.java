@@ -4,7 +4,9 @@ import org.springframework.http.MediaType;
 
 public enum ContentType {
 
-	XML("application/xml", MediaType.APPLICATION_XML), JSON("application/json", MediaType.APPLICATION_JSON);
+	XML("application/xml", MediaType.APPLICATION_XML),
+	JSON("application/json", MediaType.APPLICATION_JSON),
+	DEFAULT("default", null);
 
 	private String name;
 	private MediaType type;

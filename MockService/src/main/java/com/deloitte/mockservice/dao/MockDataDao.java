@@ -11,16 +11,26 @@ import com.deloitte.mockservice.model.MockData;
 
 @Transactional
 public interface MockDataDao extends CrudRepository<MockData, Long> {
-	public List<MockData> findById(Long requestid);	
+	
+	public MockData findById(Long id);	
 
 	@Query("select m from MockData m where lower(m.client) like %?1%")
 	public List<MockData> findByClient(String client);
 	
 	@SuppressWarnings("unchecked")
-	public MockData save(MockData mockData);
+	public MockData save(MockData mockData);	
 	
-	public List<MockData> findByRequestAndResponseAndServicename(String request, String response, String serviceName);
+	@Query("select m from MockData m where m.contenttype= ?3 and m.isStaticMock = ?2 and replace(m.servicename,'/','') = ?1")
+	public List<MockData> findByServicenameAndIsStaticMockAndContenttype(String serviceName, Boolean isStaticMock, String contentType);
 	
-	@Query("select m from MockData m where replace(servicename,'/','') = ?1")
+	public void deleteById(Long id);
+	
 	public List<MockData> findByServicename(String serviceName);
+	
+	@Query("select m from MockData m where m.request = ?4 and m.contenttype= ?3 and m.isStaticMock = ?2 and replace(m.servicename,'/','') = ?1")
+	public MockData findByServicenameAndContenttypeAndRequestAndIsStaticMock(String serviceName, Boolean isStaticMock, String contentType, String request);
+	
+	@Query("select m from MockData m where m.contenttype= ?2  and replace(m.servicename,'/','') = ?1")
+	public List<MockData> findByServicenameAndContenttype(String serviceName, String contentType);
+	
 }
