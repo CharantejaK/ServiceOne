@@ -61,6 +61,12 @@ angular.module('myApp.controllers', []).controller('View1Controller', function($
         name: 'XML'
     }
     ];
+   /*Start - code to set the radio button value*/
+   $scope.isStaticMock = false;
+   $scope.checkIsStatic = function() {
+   $scope.isStaticMock = !$scope.isStaticMock;
+   }
+   /* End - code to set the radio button value*/
     $scope.SubmitForm = function () {
         $scope.errorMsg = "Enter mandatory fields";
         var requestObj = {
@@ -69,7 +75,8 @@ angular.module('myApp.controllers', []).controller('View1Controller', function($
             response:$scope.response,
             contentTtype:$scope.contentsType,
 			description:$scope.description,
-			serviceName:$scope.serviceName
+			serviceName:$scope.serviceName,
+			isStatic:!$scope.isStaticMock
         };
 
         if(!!$scope.clientName && !!$scope.response) {

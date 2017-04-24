@@ -18,7 +18,7 @@ public class MockDataDto {
 	
 	private String serviceName;
 	
-	private Boolean isOnlySchemaValidation;
+	private Boolean isStaticMock;
 
 	public String getServiceName() {
 		return serviceName;
@@ -84,11 +84,13 @@ public class MockDataDto {
 		this.id = id;
 	}
 
-	public Boolean getIsOnlySchemaValidation() {
-		return isOnlySchemaValidation;
+	public Boolean getIsStaticMock() {
+		return isStaticMock;
 	}
 
-	public void setIsOnlySchemaValidation(Boolean isOnlySchemaValidation) {
-		this.isOnlySchemaValidation = isOnlySchemaValidation;
-	}	
+	public void setIsStaticMock(Boolean isStaticMock) {
+		this.isStaticMock = isStaticMock;
+	}
+
+	
 }

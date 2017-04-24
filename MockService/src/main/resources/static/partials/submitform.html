@@ -19,6 +19,16 @@
     <label for="serviceName">ServiceName*</label>
     <textarea class="form-control" id="serviceName" rows="1" ng-model="serviceName"></textarea>
   </div>
+   <div class="form-group">
+    <label for="">Mock Type*</label>
+     <label class="radio-inline">
+      <input type="radio" name="optradio" ng-checked="{{!isStaticMock}}" ng-click="checkIsStatic()">Static
+    </label>
+    <label class="radio-inline">
+      <input type="radio" name="optradio" ng-checked="{{isStaticMock}}" ng-click="checkIsStatic()">Dynamic
+    </label>
+  </div>
+  
   <div class="form-group">
     <label for="requestTextArea">Request</label>
     <textarea class="form-control" id="requestTextArea" rows="3" ng-model="request"></textarea>

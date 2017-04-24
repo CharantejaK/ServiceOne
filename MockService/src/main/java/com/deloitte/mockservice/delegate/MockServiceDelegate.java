@@ -55,8 +55,7 @@ public class MockServiceDelegate {
 	}
 
 	public ResponseEntity<SaveMockDataResponse> saveMockData(SaveMockDataRequest mockDataRequest) {
-		SaveMockDataResponse response = new SaveMockDataResponse();
-		mockDataRequest.setIsStaticMock(Boolean.FALSE);		
+		SaveMockDataResponse response = new SaveMockDataResponse();		
 		List<ErrorCode> errorList = new ArrayList<>();
 		response.setErrorList(errorList);
 		try {

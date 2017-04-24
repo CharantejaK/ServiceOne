@@ -25,7 +25,7 @@ public class MockServiceMapper {
 			mockDto.setClient(mockData.getClient());
 			mockDto.setServiceName(mockData.getServicename());
 			mockDto.setId(mockData.getId());
-			mockDto.setIsOnlySchemaValidation(mockData.getIsStaticMock());
+			mockDto.setIsStaticMock(mockData.getIsStaticMock());
 			mockDtoList.add(mockDto);
 		}
 		return mockDtoList;

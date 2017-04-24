@@ -19,7 +19,7 @@ app.factory('myService', function( $http) {
         promise = $http({
             method: 'POST',
             url: '/savemockdata',
-            data: {request: requestObj.request, response:requestObj.response, contenttype:requestObj.contentTtype, client:requestObj.clientName, description:requestObj.description,serviceName:requestObj.serviceName}
+            data: {request: requestObj.request, response:requestObj.response, contenttype:requestObj.contentTtype, client:requestObj.clientName, description:requestObj.description,serviceName:requestObj.serviceName,isStaticMock:requestObj.isStatic}
         });
       // Return the promise to the controller
       return promise;

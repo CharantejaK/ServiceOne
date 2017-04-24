@@ -20,17 +20,18 @@ public interface MockDataDao extends CrudRepository<MockData, Long> {
 	@SuppressWarnings("unchecked")
 	public MockData save(MockData mockData);	
 	
-	@Query("select m from MockData m where m.contenttype= ?3 and m.isStaticMock = ?2 and replace(m.servicename,'/','') = ?1")
+	@Query("select m from MockData m where m.contenttype= ?3 and m.isStaticMock = ?2 and replace(m.servicename,'/','') = ?1 and request != '' ")
 	public List<MockData> findByServicenameAndIsStaticMockAndContenttype(String serviceName, Boolean isStaticMock, String contentType);
 	
 	public void deleteById(Long id);
 	
+	@Query("select m from MockData m where replace(m.servicename,'/','') = ?1")
 	public List<MockData> findByServicename(String serviceName);
 	
 	@Query("select m from MockData m where m.request = ?4 and m.contenttype= ?3 and m.isStaticMock = ?2 and replace(m.servicename,'/','') = ?1")
 	public MockData findByServicenameAndContenttypeAndRequestAndIsStaticMock(String serviceName, Boolean isStaticMock, String contentType, String request);
 	
-	@Query("select m from MockData m where m.contenttype= ?2  and replace(m.servicename,'/','') = ?1")
+	@Query("select m from MockData m where m.contenttype= ?2  and replace(m.servicename,'/','') = ?1 and request != '' ")
 	public List<MockData> findByServicenameAndContenttype(String serviceName, String contentType);
 	
 }

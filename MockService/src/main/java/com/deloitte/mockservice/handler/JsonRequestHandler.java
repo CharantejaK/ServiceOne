@@ -75,7 +75,7 @@ public class JsonRequestHandler extends AbstractRequestHandler{
 						// gets the json dynamic response list based on the
 						// request json list
 						response.setResponse(getDynamicResponseList(requestJson, mockJsonResponse));
-						response.setContentType(mockData.getResponse());
+						response.setContentType(mockData.getContenttype());
 						return response;
 					}
 				}
