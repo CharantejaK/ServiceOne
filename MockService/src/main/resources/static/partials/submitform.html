@@ -9,10 +9,7 @@
   </div>
   <div class="form-group" autocomplete="off">
     <label for="contentType">Content type*</label>
-    <select ng-model="contentsType" class="form-control"
-        ng-options="item.id as item.name for item in contents" 
-        >
-        <option value="">Choose conent type</option>
+    <select ng-model="contentsType" required class="form-control" ng-init="contentsType='application/json'" ng-options="item.id as item.name for item in contents">      
     </select>
   </div>
    <div class="form-group">
