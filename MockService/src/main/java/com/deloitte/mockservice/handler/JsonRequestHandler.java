@@ -219,6 +219,7 @@ public class JsonRequestHandler extends AbstractRequestHandler{
 	 * Compares both the Json objects and returns true if they are same
 	 */
 	private boolean isSameJson(Object obj1, Object obj2, Boolean isSchemaOnlyComparision) throws JSONException {
+		try {
 			if (obj1 instanceof JSONObject) {
 				JSONObject jsonObj1 = (JSONObject) obj1;
 
@@ -262,13 +263,15 @@ public class JsonRequestHandler extends AbstractRequestHandler{
 					}
 				}
 			} else if (!isSchemaOnlyComparision) {
-				 if (!obj1.equals(obj2))
-		            {
-		                return false;
-		            }
+				if (!obj1.equals(obj2)) {
+					return false;
+				}
 			}
 			return true;
+		} catch (JSONException e) {
+			return false;
 		}
+	}
 
 		/**
 		 * @param obj1

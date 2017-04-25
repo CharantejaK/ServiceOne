@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -18,10 +19,14 @@ public class MockData {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	@Column(name="request", nullable=false, columnDefinition="text")
+	@Column(length=6000000)
+	@Lob
+	@NotNull
 	private String request;
 
-	@Column(name="response", nullable=false, columnDefinition="text")
+	@Column(length=6000000)
+	@Lob
+	@NotNull
 	private String response;
 
 	@NotNull
@@ -41,6 +46,9 @@ public class MockData {
 	@NotNull 
 	private Boolean isStaticMock;
 	
+	@NotNull
+	private String servicename;
+	
 	public Calendar getCreatedtime() {
 		return createdtime;
 	}
@@ -56,9 +64,6 @@ public class MockData {
 	public void setCreatedby(String createdby) {
 		this.createdby = createdby;
 	}
-
-	@NotNull
-	private String servicename;
 
 	public String getServicename() {
 		return servicename;

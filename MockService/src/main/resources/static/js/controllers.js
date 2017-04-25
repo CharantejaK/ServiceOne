@@ -26,6 +26,11 @@ angular.module('myApp.controllers', []).controller('View1Controller', function($
         $scope.showBanner = false;
     }
 }).controller('View2Controller', function($scope, $http, $location,myService, $uibModal) {
+	$scope.edit = function (data) {
+		            myService.set(data);
+		            $location.path("/submitform")
+		        }
+	
     $scope.data1 = myService.getData();
         var $ctrl = this;
         $ctrl.animationsEnabled = true;
@@ -61,6 +66,17 @@ angular.module('myApp.controllers', []).controller('View1Controller', function($
         name: 'XML'
     }
     ];
+   var id = null;
+   var data  = myService.getData();
+       if(!!data) {
+           $scope.clientName = data.client;
+           $scope.request = data.request;
+            $scope.response = data.response;
+            $scope.contentsType = data.contentttype;
+   			$scope.serviceName = data.serviceName;
+   			id = data.id;
+   			$scope.isStaticMock = !data.isStaticMock
+       }
    /*Start - code to set the radio button value*/
    $scope.isStaticMock = false;
    $scope.checkIsStatic = function() {
@@ -76,7 +92,8 @@ angular.module('myApp.controllers', []).controller('View1Controller', function($
             contentTtype:$scope.contentsType,
 			description:$scope.description,
 			serviceName:$scope.serviceName,
-			isStatic:!$scope.isStaticMock
+			isStatic:!$scope.isStaticMock,
+			id:id
         };
 
         if(!!$scope.clientName && !!$scope.response) {
