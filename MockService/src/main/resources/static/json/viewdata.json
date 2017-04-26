@@ -1,0 +1,7 @@
+{
+    "views": [
+        { "name":"John", "age":31, "city":"New York","description":"descript1"  },
+        { "name":"John2", "age":32, "city":"New York1","description":"descript2"  },
+        { "name":"John3", "age":33, "city":"New York2","description":"descript3" }
+    ]
+}

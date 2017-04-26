@@ -1,0 +1,22 @@
+
+<div ng-controller="View1Controller">
+    <div class="form-group">
+        <label for="clientName">Enter Client name*</label>
+        <input type="text" class="form-control" ng-model="clientName" placeholder="Client name" ng-change="onClientNameChange(clientName)"  aria-describedby="clientNameHelp"  />
+        <div ng-if="showErrorMsg">
+            <span style="color:red">Enter client name</span>
+        </div>
+    </div>
+    <div>
+        <button ng-click="getClientDetails()" class="btn btn-primary" type="submit">Submit</button> 
+         <!--<a href="/default" role="button" class="btn btn-primary">Back to home</a>-->
+    </div>
+    <!--<div ng-if="showBanner">
+        <flyout-message text="{{bannerText}}" type="{{bannerType}}" autodismiss="false">
+        </flyout-message>
+   </div>
+    -->
+    <div class="error-banner" ng-show="showBanner">
+    <span>{{bannerText}}!</span><span class="close" ng-click="closeBanner()">X</span>
+  </div>
+</div>
