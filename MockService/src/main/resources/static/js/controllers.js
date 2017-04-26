@@ -56,6 +56,7 @@ angular.module('myApp.controllers', []).controller('View1Controller', function($
         };
     
 }).controller('FormController', function($scope, myService, $location) {
+	$scope.isStaticMock = false;
    $scope.contents = [
     {
         id: 'application/json',
@@ -72,13 +73,13 @@ angular.module('myApp.controllers', []).controller('View1Controller', function($
            $scope.clientName = data.client;
            $scope.request = data.request;
             $scope.response = data.response;
-            $scope.contentsType = data.contentttype;
+            $scope.contentsType = data.contenttype;
    			$scope.serviceName = data.serviceName;
    			id = data.id;
    			$scope.isStaticMock = !data.isStaticMock
        }
    /*Start - code to set the radio button value*/
-   $scope.isStaticMock = false;
+   
    $scope.checkIsStatic = function() {
    $scope.isStaticMock = !$scope.isStaticMock;
    }
